@@ -40,6 +40,7 @@ Page Object Model (POM) Framework
 DataBase testing with Selenium
 
 Performance testing with Selenium
-Mobile Automation basics only!
-Cloud Automation with Sauce labs
+
+Cloud Automation Browser Stack
+
 Framework Design from scratch (TestNG, ANT, PageObject, Maven, Jenkins, Apache POI API, Excel , Datadriven, Cucumber, log4j , Client HTML Extent Reports) 
