@@ -13,63 +13,80 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class DataDriver {
-	
-	public static ArrayList<String> getData(String testCase) throws IOException {
-		// fileInputStream argument
-		String excelData = System.getProperty("user.dir") + "\\test-data\\excel_data.xlsx";
-		// System.out.println(excelData);
-		FileInputStream fileStream = new FileInputStream(excelData);
-		XSSFWorkbook workbook = new XSSFWorkbook(fileStream);
 
-		ArrayList<String> arrayList = new ArrayList<String>();
+    public static ArrayList<String> getData(String testCase) throws IOException {
+        // Define the path to the Excel file
+		String excelData = System.getProperty("user.dir") 
+        		+ "\\test-data\\excel_data.xlsx";
 
-		int sheets = workbook.getNumberOfSheets();
-		for (int i = 0; i < sheets; i++) {
-			if (workbook.getSheetName(i).equalsIgnoreCase("testdata")) {
-				// Identify TestCases column by scanning the entire 1st row
-				XSSFSheet sheet = workbook.getSheetAt(i);
-				// Get sheet rows
-				Iterator<Row> rows = sheet.iterator(); // sheet is collection of rows
-				Row firstRow = rows.next();
-				// Get row cells
-				Iterator<Cell> cells = firstRow.cellIterator(); // row is collection of cells
-				// Get cell data
-				int j = 0;
-				int column = 0;
-				while (cells.hasNext()) {
-					Cell data = cells.next();
-					if (data.getStringCellValue().equalsIgnoreCase("TestCases")) {
-						// desired column
-						column = j;
-					}
-					j++;
-				}
-				  // System.out.println(column);
+        // Initialize FileInputStream and XSSFWorkbook
+        FileInputStream fileStream = new FileInputStream(excelData);
+        XSSFWorkbook workbook = new XSSFWorkbook(fileStream);
 
-				// Scan entire column to identify cell data value
-				while (rows.hasNext()) {
-					Row row = rows.next();
-					if (row.getCell(column).getStringCellValue().equalsIgnoreCase(testCase)) {
-						Iterator<Cell> cell = row.cellIterator();
-						while (cell.hasNext()) {
-							Cell c = cell.next();
-							if(c.getCellType() == CellType.STRING) {
-								String value = c.getStringCellValue();
-								arrayList.add(value);
-							} else {
-								String value = NumberToTextConverter.toText(c.getNumericCellValue());
-								arrayList.add(value);
-							}
-						}
-					}
-				}
-			}
-		}
+        // Create an ArrayList to store the test data
+        ArrayList<String> arrayList = new ArrayList<String>();
 
-		workbook.close();
-		fileStream.close();
+        // Get the number of sheets in the workbook
+        int sheets = workbook.getNumberOfSheets();
 
-		return arrayList;
-	}
+        // Iterate through all sheets
+        for (int i = 0; i < sheets; i++) {
+            XSSFSheet sheet = workbook.getSheetAt(i);
 
+            // Check if the sheet name matches "testdata"
+            if (sheet.getSheetName().equalsIgnoreCase("testdata")) {
+
+                // Find the column index for "TestCases" in the first row
+                int columnIndex = findColumnIndex(sheet, "TestCases");
+
+                if (columnIndex != -1) {
+                    // Iterate through all rows in the sheet
+                    Iterator<Row> rows = sheet.iterator();
+                    while (rows.hasNext()) {
+                        Row row = rows.next();
+
+                        // Check if the value in the "TestCases" column matches the specified testCase
+                        if (row.getCell(columnIndex).getStringCellValue().equalsIgnoreCase(testCase)) {
+                            Iterator<Cell> cells = row.cellIterator();
+
+                            // Iterate through all cells in the matching row
+                            while (cells.hasNext()) {
+                                Cell cell = cells.next();
+
+                                // Convert cell value to String (handling both string and numeric types)
+                                String value = cell.getCellType() == CellType.STRING ?
+                                        cell.getStringCellValue() :
+                                        NumberToTextConverter.toText(cell.getNumericCellValue());
+
+                                arrayList.add(value);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Close the workbook and file stream
+        workbook.close();
+        fileStream.close();
+
+        return arrayList;
+    }
+
+    private static int findColumnIndex(XSSFSheet sheet, String columnName) {
+        // Get the first row (header row) of the sheet
+        Row firstRow = sheet.getRow(0);
+
+        // Iterate through cells in the first row to find the matching column name
+        for (int i = 0; i < firstRow.getLastCellNum(); i++) {
+            Cell cell = firstRow.getCell(i);
+
+            // Check if the cell value matches the specified columnName
+            if (cell != null && cell.getStringCellValue().equalsIgnoreCase(columnName)) {
+                return i; // Return the column index if found
+            }
+        }
+
+        return -1; // Return -1 if not found
+    }
 }

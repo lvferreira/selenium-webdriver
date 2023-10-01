@@ -44,7 +44,7 @@ public class StepDefinitionImpl extends BaseTest{
 	public void checkout_submit_order(String productName) {
 		CartPage cartPage = productCatalogue.goToCartPage();
 
-		Boolean match = cartPage.VerifyProductDisplay(productName);
+		Boolean match = cartPage.verifyProductDisplay(productName);
 		Assert.assertTrue(match);
 		CheckoutPage checkoutPage = cartPage.goToCheckout();
 		checkoutPage.selectCountry("india");

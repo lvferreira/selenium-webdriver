@@ -14,49 +14,50 @@ import rahulshettyacademy.pageobjects.CartPage;
 import rahulshettyacademy.pageobjects.OrderPage;
 
 public class AbstractComponent {
-	
-	WebDriver driver;
 
-	public AbstractComponent(WebDriver driver) {
-		this.driver = driver;
-		PageFactory.initElements(driver, this);
-	}
-	
-	@FindBy(css = "[routerlink*='cart']")
-	WebElement cartHeader;
-	
-	@FindBy(css = "[routerlink*='myorders']")
-	WebElement orderHeader;
+    private final WebDriver driver;
+    private static final int timeoutInSeconds = 5;
 
-	public void waitForElementToAppear(By findBy) {
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-		wait.until(ExpectedConditions.visibilityOfElementLocated(findBy));
-	}
-	
-	public void waitForWebElementToAppear(WebElement findBy) {
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-		wait.until(ExpectedConditions.visibilityOf(findBy));
-	}
-	
-	public CartPage goToCartPage()
-	{
-		cartHeader.click();
-		CartPage cartPage = new CartPage(driver);
-		return cartPage;
-	}
-	
-	public OrderPage goToOrdersPage()
-	{
-		orderHeader.click();
-		OrderPage orderPage = new OrderPage(driver);
-		return orderPage;
-	}
-	
-	public void waitForElementToDisappear(WebElement ele) throws InterruptedException
-	{
-		//	WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
-		//	wait.until(ExpectedConditions.invisibilityOf(ele));
-		Thread.sleep(1000);
-	}
+    // Constructor to initialize the driver
+    public AbstractComponent(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
+    }
 
+    // Web elements
+    @FindBy(css = "[routerlink*='cart']")
+    private WebElement cartLink;
+
+    @FindBy(css = "[routerlink*='myorders']")
+    private WebElement orderLink;
+
+    // Wait for an element with the specified locator to appear
+    public void waitForElementToAppear(By findBy) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(findBy));
+    }
+
+    // Wait for a WebElement to appear
+    public void waitForWebElementToAppear(WebElement element) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.visibilityOf(element));
+    }
+
+    // Navigate to the Cart page and return a CartPage object
+    public CartPage goToCartPage() {
+    	cartLink.click();
+        return new CartPage(driver);
+    }
+
+    // Navigate to the Orders page and return an OrderPage object
+    public OrderPage goToOrdersPage() {
+    	orderLink.click();
+        return new OrderPage(driver);
+    }
+
+    // Wait for an element to disappear
+    public void waitForElementToDisappear(WebElement element) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutInSeconds));
+        wait.until(ExpectedConditions.invisibilityOf(element));
+    }
 }

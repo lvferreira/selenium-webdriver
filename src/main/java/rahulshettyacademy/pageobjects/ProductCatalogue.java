@@ -7,7 +7,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-//import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import rahulshettyacademy.abstractcomponents.AbstractComponent;
 
@@ -15,41 +14,44 @@ public class ProductCatalogue extends AbstractComponent {
 
 	WebDriver driver;
 
-	public ProductCatalogue(WebDriver driver) {
-		// initialization
-		super(driver);
-		this.driver = driver;
-		PageFactory.initElements(driver, this);
-	}
+    public ProductCatalogue(WebDriver driver) {
+        // Initialization
+        super(driver);
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
+    }
 
-	@FindBy(css = ".mb-3")
-	List<WebElement> products;
-	
-	@FindBy(css = ".ng-animating")
-	WebElement spinner;
+    // Locators using @FindBy
+    @FindBy(css = ".mb-3")
+    private List<WebElement> products;
 
-	By productsBy = By.cssSelector(".mb-3");
-	By addToCart = By.cssSelector(".card-body button:last-of-type");
-	By toastMessage = By.cssSelector("#toast-container");
+    @FindBy(css = ".ng-animating")
+    private WebElement spinner;
 
-	public List<WebElement> getProductList() {
-		waitForElementToAppear(productsBy);
-		return products;
-	}
-	
-	public WebElement getProductByName(String productName)
-	{
-		WebElement prod = getProductList().stream().filter(product->
-		product.findElement(By.cssSelector("b")).getText().equals(productName)).findFirst().orElse(null);
-		return prod;
-	}
-	
-	public void addProductToCart(String productName) throws InterruptedException
-	{
-		WebElement prod = getProductByName(productName);
-		prod.findElement(addToCart).click();
-		waitForElementToAppear(toastMessage);
-		waitForElementToDisappear(spinner);
-	}
-	
+    // Locators using By
+    private By productsBy = By.cssSelector(".mb-3");
+    private By addToCart = By.cssSelector(".card-body button:last-of-type");
+    private By toastMessage = By.cssSelector("#toast-container");
+
+    // Get the list of products on the page.
+    public List<WebElement> getProductList() {
+        waitForElementToAppear(productsBy);
+        return products;
+    }
+    
+    // Get a product element by its name.
+    public WebElement getProductByName(String productName) {
+        return getProductList().stream()
+                .filter(product -> product.findElement(By.cssSelector("b")).getText().equals(productName))
+                .findFirst()
+                .orElse(null);
+    }
+
+    // Add a product to the cart by name.
+    public void addProductToCart(String productName) throws InterruptedException {
+        WebElement prod = getProductByName(productName);
+        prod.findElement(addToCart).click();
+        waitForElementToAppear(toastMessage);
+        waitForElementToDisappear(spinner);
+    }
 }

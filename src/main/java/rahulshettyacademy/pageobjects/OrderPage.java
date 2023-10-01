@@ -24,8 +24,8 @@ public class OrderPage extends AbstractComponent {
 		PageFactory.initElements(driver, this);
 	}
 
-	public Boolean VerifyOrderDisplay(String productName) {
-		Boolean match = productNames.stream().anyMatch(product -> product.getText().equalsIgnoreCase(productName));
+	public boolean verifyOrderDisplay(String productName) {
+		boolean match = productNames.stream().anyMatch(product -> product.getText().equalsIgnoreCase(productName));
 		return match;
 	}
 

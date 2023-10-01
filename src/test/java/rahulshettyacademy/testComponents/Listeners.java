@@ -1,7 +1,6 @@
 package rahulshettyacademy.testComponents;
 
 import java.io.IOException;
-
 import org.openqa.selenium.WebDriver;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
@@ -13,66 +12,61 @@ import com.aventstack.extentreports.Status;
 
 import rahulshettyacademy.resources.ExtentReporterNG;
 
-public class Listeners extends BaseTest implements ITestListener{
-	
-	ExtentTest test;
-	ExtentReports extent = ExtentReporterNG.getReportObject();
-	ThreadLocal<ExtentTest> extentTest = new ThreadLocal<ExtentTest>(); //Thread safe
-	
-	@Override
-	public void onTestStart(ITestResult result) {
-		// TODO Auto-generated method stub
-		test = extent.createTest(result.getMethod().getMethodName());
-		extentTest.set(test); //unique thread id(ErrorValidationTest)->test
-	}
+public class Listeners extends BaseTest implements ITestListener {
+    
+    private ExtentReports extent = ExtentReporterNG.getReportObject();
+    private ThreadLocal<ExtentTest> extentTest = new ThreadLocal<ExtentTest>(); // Thread-safe
 
-	@Override
-	public void onTestSuccess(ITestResult result) {
-		// TODO Auto-generated method stub
-		extentTest.get().log(Status.PASS, "Test Passed");
-	}
+    @Override
+    public void onTestStart(ITestResult result) {
+        // Create a new test in the Extent report
+        ExtentTest test = extent.createTest(result.getMethod().getMethodName());
+        extentTest.set(test); // Set the thread-local test instance
+    }
 
-	@Override
-	public void onTestFailure(ITestResult result) {
-		// TODO Auto-generated method stub
-		String filePath = null;
-		extentTest.get().fail(result.getThrowable());//
-		try {
-			driver = (WebDriver) result.getTestClass().getRealClass().getField("driver")
-					.get(result.getInstance());
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
-			filePath = getScreenshot(result.getMethod().getMethodName(),driver);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		extentTest.get().addScreenCaptureFromPath(filePath, result.getMethod().getMethodName());
-		//Screenshot, Attach to report
-	}
+    @Override
+    public void onTestSuccess(ITestResult result) {
+        // Log test success in the Extent report
+        extentTest.get().log(Status.PASS, "Test Passed");
+    }
 
-	@Override
-	public void onTestSkipped(ITestResult result) {
-		// TODO Auto-generated method stub
-	}
+    @Override
+    public void onTestFailure(ITestResult result) {
+        // Log test failure in the Extent report and capture a screenshot
+        extentTest.get().fail(result.getThrowable());
+        WebDriver driver = null;
+        try {
+            driver = (WebDriver) result.getTestClass().getRealClass().getField("driver")
+                    .get(result.getInstance());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            String filePath = getScreenshot(result.getMethod().getMethodName(), driver);
+            extentTest.get().addScreenCaptureFromPath(filePath, result.getMethod().getMethodName());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-		// TODO Auto-generated method stub
-	}
+    @Override
+    public void onTestSkipped(ITestResult result) {
+        // Test skipped, no specific actions needed
+    }
 
-	@Override
-	public void onStart(ITestContext context) {
-		// TODO Auto-generated method stub
-	}
+    @Override
+    public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
+        // Test failed within success percentage, no specific actions needed
+    }
 
-	@Override
-	public void onFinish(ITestContext context) {
-		// TODO Auto-generated method stub
-		extent.flush();
-	}
-	
+    @Override
+    public void onStart(ITestContext context) {
+        // Test suite execution starts, no specific actions needed
+    }
+
+    @Override
+    public void onFinish(ITestContext context) {
+        // Flush the Extent report to save the results
+        extent.flush();
+    }
 }

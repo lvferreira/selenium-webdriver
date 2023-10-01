@@ -24,8 +24,8 @@ public class CartPage extends AbstractComponent {
 		PageFactory.initElements(driver, this);
 	}
 
-	public Boolean VerifyProductDisplay(String productName) {
-		Boolean match = cartProducts.stream().anyMatch(product -> product.getText().equalsIgnoreCase(productName));
+	public boolean verifyProductDisplay(String productName) {
+		boolean match = cartProducts.stream().anyMatch(product -> product.getText().equalsIgnoreCase(productName));
 		return match;
 	}
 

@@ -31,6 +31,10 @@ public class LoginPage extends AbstractComponent {
 	
 	@FindBy(css = "[class*='flyInOut']")
 	WebElement errorMessage;
+	
+	public void goTo() {
+		driver.get("https://rahulshettyacademy.com/client");
+	}
 
 	public ProductCatalogue loginApplication(String email, String password) {
 		userEmail.sendKeys(email);
@@ -43,10 +47,6 @@ public class LoginPage extends AbstractComponent {
 	public String getErrorMessage() {
 		waitForWebElementToAppear(errorMessage);
 		return errorMessage.getText();
-	}
-
-	public void goTo() {
-		driver.get("https://rahulshettyacademy.com/client");
 	}
 
 }
